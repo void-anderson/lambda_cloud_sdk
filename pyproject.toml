@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ai_ops"
+version = "0.1.0"
+description = ""
+authors = ["Anderson Thomas <anderson@diva.cards>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+lambda-cloud-api-client = {path = "lambda-cloud-api-client"}
+
+[tool.poetry.dev-dependencies]
+openapi-python-client = "^0.13.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
