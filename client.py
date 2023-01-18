@@ -65,10 +65,12 @@ class OPSClient:
         self._debug(res)
         return res
 
-    def _list(self, api, type_str):
+    def _list(self, api, type_str, _filter=None):
         response = api.sync_detailed(client=self.client)
         data = json.loads(response.content)["data"]
         parsable = data.values() if type_str in ["instance_type"] else data
+        if _filter:
+            parsable = list(filter(_filter, parsable))
         self._debug(response.status_code)
         return self._parse(parsable, type_str)
 
@@ -76,14 +78,14 @@ class OPSClient:
         response = api.sync_detailed(client=self.client, id=id)
         return self._parse(response)
 
-    def list_instance_types(self):
-        return self._list(instance_types, "instance_type")
+    def list_instance_types(self, _filter=None):
+        return self._list(instance_types, "instance_type", _filter)
 
-    def list_instances(self):
-        return self._list(list_instances, "instance")
+    def list_instances(self, _filter=None):
+        return self._list(list_instances, "instance", _filter)
 
-    def list_ssh_keys(self):
-        return self._list(list_ssh_keys, "ssh_key")
+    def list_ssh_keys(self, _filter=None):
+        return self._list(list_ssh_keys, "ssh_key", _filter)
 
     def get_instance(self, id):
         return self._get(get_instance, id)
