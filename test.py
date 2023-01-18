@@ -8,9 +8,12 @@ opsc = OPSClient(BASE_URL, ACCESS_TOKEN)
 
 
 # # Instance Types
-# instance_types = opsc.list_instance_types(
-#     lambda i: len(i["regions_with_capacity_available"]) > 0
-# )
+instance_types = opsc.list_instance_types(
+    [
+        lambda i: len(i["regions_with_capacity_available"]) > 0,
+        lambda i: i["instance_type"]["price_cents_per_hour"] < 100,
+    ]
+)
 # instances = opsc.list_instances()
 #
 # # With SSH Keys
@@ -19,10 +22,10 @@ opsc = OPSClient(BASE_URL, ACCESS_TOKEN)
 #
 #
 # # Print the results
-# print(instance_types)
+print(instance_types)
 # print(instances)
 #
 # print(ssh_key)
 # print(ssh_keys)
 
-instance = opsc.create_instance(region_name="hello")
+# instance = opsc.create_instance(region_name="hello")
