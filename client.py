@@ -78,6 +78,10 @@ class OPSClient:
         response = api.sync_detailed(client=self.client, id=id)
         return self._parse(response)
 
+    def _exclusive_kw(self, kw, arg_list):
+        args = {k: v for k, v in kw.items() if k in arg_list}
+        return args
+
     def list_instance_types(self, _filter=None):
         return self._list(instance_types, "instance_type", _filter)
 
@@ -90,14 +94,27 @@ class OPSClient:
     def get_instance(self, id):
         return self._get(get_instance, id)
 
-    def create_instance(self):
-        pass
+    def create_instance(self, **kwargs):
+        args = self._exclusive_kw(
+            kwargs,
+            [
+                "region_name",
+                "instance_type_name",
+                "ssh_key_names",
+                "file_system_names",
+                "quantity",
+                "name",
+            ],
+        )
+        print(args)
+        response = launch_instance.sync_detailed(client=self.client, **args)
+        print(response)
 
     def remove_instance(self):
         pass
 
-    def create_ssh_key(self, key_name=None):
-        name = key_name if key_name else uuid.uuid4().hex
+    def create_ssh_key(self, name=None):
+        name = name if name else uuid.uuid4().hex
         response = add_ssh_key.sync_detailed(client=self.client, name=name)
         data = json.loads(response.content)["data"]
         return self._parse_single(data, "ssh_key")

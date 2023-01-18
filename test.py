@@ -7,24 +7,22 @@ ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 opsc = OPSClient(BASE_URL, ACCESS_TOKEN)
 
 
-# Instance Types
-returned_instance_types = opsc.list_instance_types(
-    lambda i: len(i["regions_with_capacity_available"]) > 0
-)
-# returned_instances = opsc.list_instances()
-
-# With SSH Keys
-# returned_ssh_key = opsc.create_ssh_key()
-# returned_ssh_keys = opsc.list_ssh_keys()
-
-print(returned_instance_types)
-# print(returned_instances)
+# # Instance Types
+# instance_types = opsc.list_instance_types(
+#     lambda i: len(i["regions_with_capacity_available"]) > 0
+# )
+# instances = opsc.list_instances()
 #
-# print(returned_ssh_key)
-# print(returned_ssh_keys)
+# # With SSH Keys
+# ssh_key = opsc.create_ssh_key()
+# ssh_keys = opsc.list_ssh_keys()
+#
+#
+# # Print the results
+# print(instance_types)
+# print(instances)
+#
+# print(ssh_key)
+# print(ssh_keys)
 
-# for keys in returned_instance_types["data"]:
-# v = returned_instance_types["data"][keys]
-# capable_regions = v["regions_with_capacity_available"]
-# if len(capable_regions) != 0:
-#    print(v)
+instance = opsc.create_instance(region_name="hello")
