@@ -37,13 +37,14 @@ class InstanceTypeWithRegions:
         self.regions = kwargs["regions"]
 
     def __repr__(self):
-        return "{}".format(
-            {
-                "name": self.name,
-                "instance_type": self.instance_type.to_dict(),
-                "regions": [region.to_dict() for region in self.regions],
-            }
-        )
+        return "{}".format(self.to_dict())
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "instance_type": self.instance_type.to_dict(),
+            "regions": [region.to_dict() for region in self.regions],
+        }
 
     @classmethod
     def from_dict(cls, src_dict):
@@ -90,12 +91,10 @@ class OPSClient:
         self._debug(res)
         return res
 
-    def _list(self, api, type_str, _filters=[]):
+    def _list(self, api, type_str):
         response = api.sync_detailed(client=self.client)
         data = json.loads(response.content)["data"]
         parsable = data.values() if type(data) is dict else data
-        for _filter in _filters:
-            parsable = list(filter(_filter, parsable))
         self._debug(response.status_code)
         return self._parse(parsable, type_str)
 
@@ -107,14 +106,22 @@ class OPSClient:
         args = {k: v for k, v in kw.items() if k in arg_list}
         return args
 
-    def list_instance_types(self, _filters=[]):
-        return self._list(instance_types, "instance_type_with_regions", _filters)
+    def _apply_filters(self, parsed, filters):
+        for _filter in filters:
+            parsed = list(filter(_filter, parsed))
+        return parsed
 
-    def list_instances(self, _filters=[]):
-        return self._list(list_instances, "instance", _filters)
+    def list_instance_types(self, filters=[]):
+        parsed = self._list(instance_types, "instance_type_with_regions")
+        return self._apply_filters(parsed, filters)
 
-    def list_ssh_keys(self, _filters=[]):
-        return self._list(list_ssh_keys, "ssh_key", _filters)
+    def list_instances(self, filters=[]):
+        parsed = self._list(list_instances, "instance")
+        return self._apply_filters(parsed, filters)
+
+    def list_ssh_keys(self, filters=[]):
+        parsed = self._list(list_ssh_keys, "ssh_key")
+        return self._apply_filters(parsed, filters)
 
     def get_instance(self, id):
         return self._get(get_instance, id)

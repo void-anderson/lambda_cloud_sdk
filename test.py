@@ -6,12 +6,11 @@ ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 
 opsc = OPSClient(BASE_URL, ACCESS_TOKEN)
 
-
 # # Instance Types
 instance_types = opsc.list_instance_types(
     [
-        lambda i: len(i["regions_with_capacity_available"]) > 0,
-        lambda i: i["instance_type"]["price_cents_per_hour"] < 100,
+        lambda i: len(i.regions) > 0,
+        lambda i: i.instance_type.price_cents_per_hour < 100,
     ]
 )
 instances = opsc.list_instances()
