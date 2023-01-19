@@ -14,18 +14,18 @@ instance_types = opsc.list_instance_types(
         lambda i: i["instance_type"]["price_cents_per_hour"] < 100,
     ]
 )
-# instances = opsc.list_instances()
+instances = opsc.list_instances()
 #
 # # With SSH Keys
 # ssh_key = opsc.create_ssh_key()
-# ssh_keys = opsc.list_ssh_keys()
+ssh_keys = opsc.list_ssh_keys()
 #
 #
 # # Print the results
 print(instance_types)
-# print(instances)
+print(instances)
 #
 # print(ssh_key)
-# print(ssh_keys)
+print(ssh_keys)
 
 # instance = opsc.create_instance(region_name="hello")

@@ -30,8 +30,38 @@ from lambda_cloud_api_client.api.default import (
 )
 
 
+class InstanceTypeWithRegions:
+    def __init__(self, **kwargs):
+        self.name = kwargs["name"]
+        self.instance_type = kwargs["instance_type"]
+        self.regions = kwargs["regions"]
+
+    def __repr__(self):
+        return "{}".format(
+            {
+                "name": self.name,
+                "instance_type": self.instance_type.to_dict(),
+                "regions": [region.to_dict() for region in self.regions],
+            }
+        )
+
+    @classmethod
+    def from_dict(cls, src_dict):
+        d = src_dict.copy()
+        instance_type = d.pop("instance_type")
+        regions = d.pop("regions_with_capacity_available")
+        name = instance_type["name"]
+        instance_type_with_regions = cls(
+            name=name,
+            instance_type=InstanceType.from_dict(instance_type),
+            regions=[Region.from_dict(region) for region in regions],
+        )
+        return instance_type_with_regions
+
+
 TypeMap = {
     "instance_type": InstanceType,
+    "instance_type_with_regions": InstanceTypeWithRegions,
     "instance": Instance,
     "ssh_key": SshKey,
 }
@@ -51,24 +81,19 @@ class OPSClient:
             print("DEBUG MSG:{}".format(msg))
 
     def _parse(self, parsable, type_str):
-        model_collection = list()
-        for item in parsable:
-            dict_item = item[type_str] if type_str in ["instance_type"] else item
-            model_collection.append(TypeMap[type_str].from_dict(dict_item))
-        res = {"raw": parsable, "collection": model_collection}
+        res = [TypeMap[type_str].from_dict(item) for item in parsable]
         self._debug(res)
         return res
 
     def _parse_single(self, parsable, type_str):
-        model = TypeMap[type_str].from_dict(parsable)
-        res = {"raw": parsable, "model": model}
+        res = TypeMap[type_str].from_dict(parsable)
         self._debug(res)
         return res
 
-    def _list(self, api, type_str, _filters=None):
+    def _list(self, api, type_str, _filters=[]):
         response = api.sync_detailed(client=self.client)
         data = json.loads(response.content)["data"]
-        parsable = data.values() if type_str in ["instance_type"] else data
+        parsable = data.values() if type(data) is dict else data
         for _filter in _filters:
             parsable = list(filter(_filter, parsable))
         self._debug(response.status_code)
@@ -82,13 +107,13 @@ class OPSClient:
         args = {k: v for k, v in kw.items() if k in arg_list}
         return args
 
-    def list_instance_types(self, _filters=None):
-        return self._list(instance_types, "instance_type", _filters)
+    def list_instance_types(self, _filters=[]):
+        return self._list(instance_types, "instance_type_with_regions", _filters)
 
-    def list_instances(self, _filters=None):
+    def list_instances(self, _filters=[]):
         return self._list(list_instances, "instance", _filters)
 
-    def list_ssh_keys(self, _filters=None):
+    def list_ssh_keys(self, _filters=[]):
         return self._list(list_ssh_keys, "ssh_key", _filters)
 
     def get_instance(self, id):
