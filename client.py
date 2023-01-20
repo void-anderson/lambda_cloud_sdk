@@ -141,14 +141,18 @@ class OPSClient:
             ],
         )
         args["name"] = args["name"] if "name" in args.keys() else uuid.uuid4().hex
-        print(args)
         response = launch_instance.sync_detailed(client=self.client, **args)
         self._debug(response.status_code)
         data = json.loads(response.content)["data"]
         return data["instance_ids"]
 
-    def remove_instance(self):
-        pass
+    def remove_instance(self, instance_ids):
+        response = terminate_instance.sync_detailed(
+            client=self.client, instance_ids=instance_ids
+        )
+        self._debug(response.status_code)
+        data = json.loads(response.content)["data"]["terminated_instances"]
+        return self._parse(data, "instance")
 
     def create_ssh_key(self, name=None):
         name = name if name else uuid.uuid4().hex

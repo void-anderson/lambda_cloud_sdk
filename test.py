@@ -38,8 +38,14 @@ instance_ids = opsc.create_instances(
     file_system_names=[],
     quantity=1,
 )
-
 print(instance_ids)
+
 for instance_id in instance_ids:
+    print("getting instance {}...".format(instance_id))
     instance = opsc.get_instance(instance_id)
     print(instance)
+
+print("removing instances...")
+removed_instances = opsc.remove_instance(instance_ids)
+
+print(removed_instances)
