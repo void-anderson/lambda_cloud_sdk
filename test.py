@@ -4,7 +4,7 @@ from client import OPSClient
 BASE_URL = os.environ.get("BASE_URL")
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 
-opsc = OPSClient(BASE_URL, ACCESS_TOKEN)
+opsc = OPSClient(BASE_URL, ACCESS_TOKEN + "1")
 
 # Instance Types
 print("listing available instance types...")

@@ -60,6 +60,26 @@ class InstanceTypeWithRegions:
         return instance_type_with_regions
 
 
+class APIExceptions(Exception):
+    def __init__(self, **kwargs):
+        self.err = kwargs["err"]
+
+    def __repr__(self):
+        return "{}".format(self.to_dict())
+
+    def __str__(self):
+        return "{}".format(self.to_dict())
+
+    def to_dict(self):
+        return {"err": self.err.to_dict()}
+
+    @classmethod
+    def from_dict(cls, src_dict):
+        d = src_dict.copy()
+        api_exception = cls(err=Error.from_dict(d))
+        return api_exception
+
+
 TypeMap = {
     "instance_type": InstanceType,
     "instance_type_with_regions": InstanceTypeWithRegions,
@@ -93,15 +113,13 @@ class OPSClient:
 
     def _list(self, api, type_str):
         response = api.sync_detailed(client=self.client)
-        data = json.loads(response.content)["data"]
+        data = self._handle_response(response)
         parsable = data.values() if type(data) is dict else data
-        self._debug(response.status_code)
         return self._parse(parsable, type_str)
 
     def _get(self, api, id):
         response = api.sync_detailed(client=self.client, id=id)
-        self._debug(response.status_code)
-        data = json.loads(response.content)["data"]
+        data = self._handle_response(response)
         return self._parse_single(data, "instance")
 
     def _exclusive_kw(self, kw, arg_list):
@@ -112,6 +130,15 @@ class OPSClient:
         for _filter in filters:
             parsed = list(filter(_filter, parsed))
         return parsed
+
+    def _handle_response(self, response, path="data"):
+        self._debug(response.status_code)
+        if response.status_code == 200:
+            return json.loads(response.content)[path]
+        else:
+            error_json = json.loads(response.content)["error"]
+            error = APIExceptions.from_dict(error_json)
+            raise error
 
     def list_instance_types(self, filters=[]):
         parsed = self._list(instance_types, "instance_type_with_regions")
@@ -142,21 +169,18 @@ class OPSClient:
         )
         args["name"] = args["name"] if "name" in args.keys() else uuid.uuid4().hex
         response = launch_instance.sync_detailed(client=self.client, **args)
-        self._debug(response.status_code)
-        data = json.loads(response.content)["data"]
+        data = self._handle_response(response)
         return data["instance_ids"]
 
     def remove_instance(self, instance_ids):
         response = terminate_instance.sync_detailed(
             client=self.client, instance_ids=instance_ids
         )
-        self._debug(response.status_code)
-        data = json.loads(response.content)["data"]["terminated_instances"]
+        data = self._handle_response(response)["terminated_instances"]
         return self._parse(data, "instance")
 
     def create_ssh_key(self, name=None):
         name = name if name else uuid.uuid4().hex
         response = add_ssh_key.sync_detailed(client=self.client, name=name)
-        self._debug(response.status_code)
-        data = json.loads(response.content)["data"]
+        data = self._handle_response(response)
         return self._parse_single(data, "ssh_key")
