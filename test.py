@@ -30,6 +30,7 @@ print(instances)
 print(ssh_key)
 print(ssh_keys)
 
+# Create Instance
 print("creating instance...")
 instance_ids = opsc.create_instances(
     region_name=instance_types[0].regions[0].name,
@@ -40,12 +41,13 @@ instance_ids = opsc.create_instances(
 )
 print(instance_ids)
 
+# Get Instance
 for instance_id in instance_ids:
     print("getting instance {}...".format(instance_id))
     instance = opsc.get_instance(instance_id)
     print(instance)
 
+# Remove Instance
 print("removing instances...")
 removed_instances = opsc.remove_instance(instance_ids)
-
 print(removed_instances)
