@@ -137,8 +137,7 @@ class OPSClient:
             return json.loads(response.content)[path]
         else:
             error_json = json.loads(response.content)["error"]
-            error = APIExceptions.from_dict(error_json)
-            raise error
+            raise APIExceptions.from_dict(error_json)
 
     def list_instance_types(self, filters=[]):
         parsed = self._list(instance_types, "instance_type_with_regions")
