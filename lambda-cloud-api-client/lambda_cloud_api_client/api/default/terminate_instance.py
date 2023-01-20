@@ -9,6 +9,7 @@ from ...types import Response
 
 
 def _get_kwargs(
+    instance_ids: Any,
     *,
     client: Client,
 ) -> Dict[str, Any]:
@@ -22,6 +23,7 @@ def _get_kwargs(
         "url": url,
         "headers": headers,
         "cookies": cookies,
+        "json": {"instance_ids": instance_ids},
         "timeout": client.get_timeout(),
     }
 
@@ -55,6 +57,7 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Any
 
 
 def sync_detailed(
+    instance_ids: Any,
     *,
     client: Client,
 ) -> Response[Any]:
@@ -71,6 +74,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
+        instance_ids=instance_ids,
         client=client,
     )
 

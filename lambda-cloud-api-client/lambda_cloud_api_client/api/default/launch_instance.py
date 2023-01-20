@@ -9,6 +9,12 @@ from ...types import Response
 
 
 def _get_kwargs(
+    region_name: str,
+    instance_type_name: str,
+    ssh_key_names: Any,
+    file_system_names: Any,
+    quantity: Optional,
+    name: str,
     *,
     client: Client,
 ) -> Dict[str, Any]:
@@ -22,6 +28,14 @@ def _get_kwargs(
         "url": url,
         "headers": headers,
         "cookies": cookies,
+        "json": {
+            "region_name": region_name,
+            "instance_type_name": instance_type_name,
+            "ssh_key_names": ssh_key_names,
+            "file_system_names": file_system_names,
+            "quantity": quantity,
+            "name": name,
+        },
         "timeout": client.get_timeout(),
     }
 
@@ -55,6 +69,12 @@ def _build_response(*, client: Client, response: httpx.Response) -> Response[Any
 
 
 def sync_detailed(
+    region_name: str,
+    instance_type_name: str,
+    ssh_key_names: Any,
+    file_system_names: Any,
+    quantity: Optional,
+    name: str,
     *,
     client: Client,
 ) -> Response[Any]:
@@ -71,6 +91,12 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
+        region_name=region_name,
+        instance_type_name=instance_type_name,
+        ssh_key_names=ssh_key_names,
+        file_system_names=file_system_names,
+        quantity=quantity,
+        name=name,
         client=client,
     )
 

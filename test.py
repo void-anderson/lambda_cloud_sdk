@@ -26,8 +26,20 @@ ssh_keys = opsc.list_ssh_keys()
 # Print the results
 print(instance_types)
 print(instances)
-#
+
 print(ssh_key)
 print(ssh_keys)
 
-# instance = opsc.create_instance(region_name="hello")
+print("creating instance...")
+instance_ids = opsc.create_instances(
+    region_name=instance_types[0].regions[0].name,
+    instance_type_name=instance_types[0].name,
+    ssh_key_names=[ssh_key.name],
+    file_system_names=[],
+    quantity=1,
+)
+
+print(instance_ids)
+for instance_id in instance_ids:
+    instance = opsc.get_instance(instance_id)
+    print(instance)

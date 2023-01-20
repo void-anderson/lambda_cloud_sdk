@@ -100,7 +100,9 @@ class OPSClient:
 
     def _get(self, api, id):
         response = api.sync_detailed(client=self.client, id=id)
-        return self._parse(response)
+        self._debug(response.status_code)
+        data = json.loads(response.content)["data"]
+        return self._parse_single(data, "instance")
 
     def _exclusive_kw(self, kw, arg_list):
         args = {k: v for k, v in kw.items() if k in arg_list}
@@ -126,7 +128,7 @@ class OPSClient:
     def get_instance(self, id):
         return self._get(get_instance, id)
 
-    def create_instance(self, **kwargs):
+    def create_instances(self, **kwargs):
         args = self._exclusive_kw(
             kwargs,
             [
@@ -138,9 +140,12 @@ class OPSClient:
                 "name",
             ],
         )
+        args["name"] = args["name"] if "name" in args.keys() else uuid.uuid4().hex
         print(args)
         response = launch_instance.sync_detailed(client=self.client, **args)
-        print(response)
+        self._debug(response.status_code)
+        data = json.loads(response.content)["data"]
+        return data["instance_ids"]
 
     def remove_instance(self):
         pass
@@ -148,5 +153,6 @@ class OPSClient:
     def create_ssh_key(self, name=None):
         name = name if name else uuid.uuid4().hex
         response = add_ssh_key.sync_detailed(client=self.client, name=name)
+        self._debug(response.status_code)
         data = json.loads(response.content)["data"]
         return self._parse_single(data, "ssh_key")
