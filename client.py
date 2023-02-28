@@ -4,10 +4,10 @@ import functools
 
 from collections import OrderedDict
 
-from lambda_cloud_api_client import AuthenticatedClient
-from lambda_cloud_api_client.types import Response
+from lambda_cloud import AuthenticatedClient
+from lambda_cloud.types import Response
 
-from lambda_cloud_api_client.models import (
+from lambda_cloud.models import (
     InstanceType,
     InstanceTypeSpecs,
     Instance,
@@ -19,7 +19,7 @@ from lambda_cloud_api_client.models import (
     ErrorResponseBody,
 )
 
-from lambda_cloud_api_client.api.default import (
+from lambda_cloud.api.default import (
     instance_types,
     list_instances,
     list_ssh_keys,
@@ -93,9 +93,7 @@ class OPSClient:
         self.base_url = base_url
         self.access_token = access_token
         self.debug = int(os.environ.get("DEBUG"))
-        self.client = AuthenticatedClient(
-            base_url=self.base_url, token=self.access_token
-        )
+        self.client = AuthenticatedClient(base_url=self.base_url, token=self.access_token)
 
     def _debug(self, msg):
         if self.debug:
@@ -172,9 +170,7 @@ class OPSClient:
         return data["instance_ids"]
 
     def remove_instance(self, instance_ids):
-        response = terminate_instance.sync_detailed(
-            client=self.client, instance_ids=instance_ids
-        )
+        response = terminate_instance.sync_detailed(client=self.client, instance_ids=instance_ids)
         data = self._handle_response(response)["terminated_instances"]
         return self._parse(data, "instance")
 
