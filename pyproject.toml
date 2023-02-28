@@ -4,9 +4,7 @@ version = "1.2.0"
 description = "A client library for accessing Lambda Cloud API"
 
 
-authors = [
-    {name = "Thomas Anderson", email = "anderson@diva.cards"},
-]
+authors = ["Thomas Anderson <anderson@diva.cards>"]
 
 readme = "README.md"
 packages = [
