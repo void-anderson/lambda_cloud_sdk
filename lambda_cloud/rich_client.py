@@ -4,10 +4,10 @@ import functools
 
 from collections import OrderedDict
 
-from lambda_cloud import AuthenticatedClient
-from lambda_cloud.types import Response
+from .client import AuthenticatedClient
+from .types import Response
 
-from lambda_cloud.models import (
+from .models import (
     InstanceType,
     InstanceTypeSpecs,
     Instance,
@@ -19,7 +19,7 @@ from lambda_cloud.models import (
     ErrorResponseBody,
 )
 
-from lambda_cloud.api.default import (
+from .api.default import (
     instance_types,
     list_instances,
     list_ssh_keys,

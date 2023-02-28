@@ -1,5 +1,5 @@
 import os
-from client import OPSClient
+from lambda_cloud.rich_client import OPSClient
 
 BASE_URL = os.environ.get("BASE_URL")
 ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
