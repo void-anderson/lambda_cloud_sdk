@@ -1,12 +1,14 @@
 [tool.poetry]
-name = "lambda-cloud-api-client"
+name = "lambda_cloud"
 version = "1.2.0"
 description = "A client library for accessing Lambda Cloud API"
 
 authors = ["anderson@diva.cards"]
 
 readme = "README.md"
-packages = []
+packages = [
+ { include = "lambda_cloud" }
+]
 include = ["CHANGELOG.md", "lambda_cloud_api_client/py.typed"]
 
 [tool.poetry.dependencies]
