@@ -5,6 +5,10 @@ description = ""
 authors = ["Anderson Thomas <anderson@diva.cards>"]
 license = "MIT"
 
+packages = [
+    {include = "lambda-cloud-api-client"},
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 lambda-cloud-api-client = {path = "lambda-cloud-api-client"}
